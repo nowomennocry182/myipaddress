@@ -3,31 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cek IP Android</title>
-    <script>
-        async function checkIP() {
-            // Ambil IP perangkat
-            const response = await fetch("https://api.ipify.org?format=json");
-            const data = await response.json();
-            const ip = data.ip;
-
-            // Kirim IP ke server
-            const serverResponse = await fetch("https://obscure-computing-machine-5gxjqwrx7v9v3pgjg-5000.app.github.dev/check-ip", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ ip: ip })
-            });
-
-            const result = await serverResponse.json();
-            document.getElementById("result").innerText = result.message;
+    <title>IP Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-    </script>
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Cek IP Android</h1>
-    <button onclick="checkIP()">Cek IP</button>
-    <p id="result"></p>
+    <div class="container">
+        <h1>IP Checker</h1>
+        <p>Click the button below to check your IP and verify it against the server.</p>
+        <button onclick="checkIP()">Check IP</button>
+        <div class="result" id="result"></div>
+    </div>
+    <script>
+        async function checkIP() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Fetching IP...';
+
+            try {
+                // Get client IP
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                const clientIP = data.ip;
+
+                resultDiv.textContent = `Your IP: ${clientIP}`;
+
+                // Send IP to server
+                const serverResponse = await fetch('https://obscure-computing-machine-5gxjqwrx7v9v3pgjg-3000.app.github.dev/check-ip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip: clientIP })
+                });
+                const serverData = await serverResponse.json();
+
+                resultDiv.textContent += `\nServer Response: ${serverData.message}`;
+            } catch (error) {
+                resultDiv.textContent = 'Error: Unable to fetch IP or connect to server.';
+            }
+        }
+    </script>
 </body>
 </html>
