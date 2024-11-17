@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek IP Device</title>
+</head>
+<body>
+    <h1>Cek IP Device Anda</h1>
+    <p>IP Device Anda: <span id="ip-address">Mencari...</span></p>
+    <button id="check-ip-btn">Cek dan Kirim IP</button>
+    <p id="result-message"></p>
+
+    <script>
+        document.getElementById('check-ip-btn').addEventListener('click', async function() {
+            // Mendapatkan IP menggunakan layanan API eksternal
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            const ipAddress = data.ip;
+
+            // Tampilkan IP
+            document.getElementById('ip-address').textContent = ipAddress;
+
+            // Kirim IP ke server untuk pemeriksaan
+            const resultMessage = await checkAndSaveIp(ipAddress);
+            document.getElementById('result-message').textContent = resultMessage;
+        });
+
+        async function checkAndSaveIp(ipAddress) {
+            const response = await fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'ip=' + ipAddress
+            });
+
+            const result = await response.text();
+            return result;
+        }
+    </script>
+</body>
+</html>
